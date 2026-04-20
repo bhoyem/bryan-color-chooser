@@ -1,23 +1,24 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+// import { Link } from "expo-router";
+import { Text, View } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>Edit app/index.tsx to edit this screen</Text>
-      <Link href="/about">Go to about page</Link>
-    </SafeAreaView>
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-xl font-bold text-blue-500">
+          Welcome to Nativewind!
+        </Text>
+      </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "lightblue",
-    borderColor: "red",
-    borderWidth: 4,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     backgroundColor: "lightblue",
+//     borderColor: "cyan",
+//     borderWidth: 4,
+//   },
+// });
