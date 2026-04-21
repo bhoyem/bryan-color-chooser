@@ -1,25 +1,45 @@
-import { Button } from "../components/Button";
-import { Screen } from "../components/Screen";
-import { Subtitle, Title } from "../components/Typography";
-import { FormInput } from "../components/FormInput";
-import { useAuth } from "../contexts/AuthContext";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
+import { Button } from "../components/Button";
+import { FormInput } from "../components/FormInput";
+import { Screen } from "../components/Screen";
+import { Subtitle, Title } from "../components/Typography";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { session, login, logout } = useAuth();
 
-  const handleLogin = () => {
-    login(email);
-    setEmail("");
-    setPassword("");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert(
+        "Missing Information",
+        "Please enter both email and password.",
+      );
+      return;
+    }
+
+    try {
+      await login(email);
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to sign in right now.";
+      Alert.alert("Login Failed", message);
+    }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to sign out right now.";
+      Alert.alert("Logout Failed", message);
+    }
   };
 
   return (
