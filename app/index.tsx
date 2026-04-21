@@ -1,51 +1,56 @@
-// import { Link } from "expo-router";
-// import { Text, View, Button, TextInput } from "react-native";
-// // import { SafeAreaView } from "react-native-safe-area-context";
-
-// export default function Index() {
-//   return (
-//     <View className="flex-1 items-center justify-center bg-white">
-//       <Text className="text-xl font-bold text-blue-500">
-//         Welcome to Nativewind!
-//       </Text>
-//       <Link href="/about" className="p-4 bg-blue-500 text-white rounded-md">
-//         Go to About
-//       </Link>
-//     </View>
-//   );
-// }
-import { Linking } from 'react-native';
-import { Link } from 'expo-router';
-import { Text } from 'react-native';
-import { Button, TextInput } from 'react-native';
-import { View } from 'react-native';
+import { Button } from "../components/Button";
+import { Screen } from "../components/Screen";
+import { Subtitle, Title } from "../components/Typography";
+import { FormInput } from "../components/FormInput";
+import { useState } from "react";
+import { Alert, View } from "react-native";
 
 export default function Index() {
-  const handleLogin = async () => {
-    const email = 'user@example.com';
-    const password = 'password123';
-    // TODO: validate email and password
-    await Linking.openURL('https://example.com/login?email=' + email + '&password=' + password);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = () => {
+    setLoading(true);
+    // Simulate login delay
+    setLoading(false);
+    Alert.alert("Success", `Logged in as ${email}`);
+    setEmail("");
+    setPassword("");
   };
 
   return (
-    <View className="flex-1 justify-center items-center">
-      <Text className="text-2xl font-bold mb-8">Login</Text>
-      <TextInput
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-        placeholder="Email"
-        onChangeText={(text) => { /* TODO: set email state */ }}
-      />
-      <TextInput
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(text) => { /* TODO: set password state */ }}
-      />
-      <Button title="Login" onPress={handleLogin} />
-      <Link href="/about" className="mt-8 text-blue-500 underline">
-        Don't have an account? Sign up
-      </Link>
-    </View>
+    <Screen className="justify-center items-center px-6">
+      {/* Container */}
+      <View className="w-full bg-white rounded-2xl shadow-lg p-8">
+        {/* Header */}
+        <Title className="mb-2 text-center">Welcome Back</Title>
+        <Subtitle className="text-center mb-8">Sign in to your account</Subtitle>
+
+        {/* Email Input */}
+        <FormInput
+          label="Email"
+          placeholder="you@example.com"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="sentences"
+          editable={!loading}
+        />
+
+        {/* Password Input */}
+        <FormInput
+          label="Password"
+          placeholder="••••••••"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!loading}
+        />
+
+        {/* Login Button */}
+        <Button onPress={handleLogin} disabled={loading} label={loading ? "Signing in..." : "Sign In"} />
+      </View>
+    </Screen>
   );
 }
