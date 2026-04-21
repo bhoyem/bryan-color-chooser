@@ -2,22 +2,24 @@ import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
 import { Subtitle, Title } from "../components/Typography";
 import { FormInput } from "../components/FormInput";
+import { useAuth } from "../contexts/AuthContext";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { session, login, logout } = useAuth();
 
   const handleLogin = () => {
-    setLoading(true);
-    // Simulate login delay
-    setLoading(false);
-    Alert.alert("Success", `Logged in as ${email}`);
+    login(email);
     setEmail("");
     setPassword("");
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -25,28 +27,41 @@ export default function Index() {
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
           <Title className="mb-2 text-center">Welcome Back</Title>
-          <Subtitle className="text-center mb-8">Sign in to your account</Subtitle>
+          {session ? (
+            <>
+              <Subtitle className="text-center mb-8">
+                Signed in as {session.user.email}
+              </Subtitle>
+              <Button onPress={handleLogout} label="Log Out" />
+            </>
+          ) : (
+            <>
+              <Subtitle className="text-center mb-8">
+                Sign in to your account
+              </Subtitle>
 
-          <FormInput
-            label="Email"
-            placeholder="you@example.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="sentences"
-            editable={!loading}
-          />
+              <FormInput
+                label="Email"
+                placeholder="you@example.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="sentences"
+                editable
+              />
 
-          <FormInput
-            label="Password"
-            placeholder="password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            editable={!loading}
-          />
+              <FormInput
+                label="Password"
+                placeholder="password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable
+              />
 
-          <Button onPress={handleLogin} disabled={loading} label={loading ? "Signing in..." : "Sign In"} />
+              <Button onPress={handleLogin} label="Sign In" />
+            </>
+          )}
         </View>
       </View>
 
