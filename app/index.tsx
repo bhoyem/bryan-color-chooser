@@ -2,8 +2,9 @@ import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
 import { Subtitle, Title } from "../components/Typography";
 import { FormInput } from "../components/FormInput";
+import { Link } from "expo-router";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -20,36 +21,42 @@ export default function Index() {
   };
 
   return (
-    <Screen className="justify-center items-center px-6">
-      {/* Container */}
-      <View className="w-full bg-white rounded-2xl shadow-lg p-8">
-        {/* Header */}
-        <Title className="mb-2 text-center">Welcome Back</Title>
-        <Subtitle className="text-center mb-8">Sign in to your account</Subtitle>
+    <Screen className="px-6">
+      <View className="flex-1 w-full justify-center items-center">
+        <View className="w-full bg-white rounded-2xl shadow-lg p-8">
+          <Title className="mb-2 text-center">Welcome Back</Title>
+          <Subtitle className="text-center mb-8">Sign in to your account</Subtitle>
 
-        {/* Email Input */}
-        <FormInput
-          label="Email"
-          placeholder="you@example.com"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="sentences"
-          editable={!loading}
-        />
+          <FormInput
+            label="Email"
+            placeholder="you@example.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="sentences"
+            editable={!loading}
+          />
 
-        {/* Password Input */}
-        <FormInput
-          label="Password"
-          placeholder="••••••••"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!loading}
-        />
+          <FormInput
+            label="Password"
+            placeholder="password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            editable={!loading}
+          />
 
-        {/* Login Button */}
-        <Button onPress={handleLogin} disabled={loading} label={loading ? "Signing in..." : "Sign In"} />
+          <Button onPress={handleLogin} disabled={loading} label={loading ? "Signing in..." : "Sign In"} />
+        </View>
+      </View>
+
+      <View className="items-center pb-6">
+        <Link href="/about" asChild>
+          <Text className="text-blue-600 mb-2">About</Text>
+        </Link>
+        <Link href="/contact" asChild>
+          <Text className="text-blue-600">Contact</Text>
+        </Link>
       </View>
     </Screen>
   );
