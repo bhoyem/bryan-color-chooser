@@ -1,15 +1,27 @@
 import { Stack } from "expo-router";
-import { AuthProvider } from "../contexts/AuthContext";
-import "../global.css";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
+import "@/global.css";
 
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerTitle: "Home" }} />
-        <Stack.Screen name="about" options={{ headerTitle: "About" }} />
-        <Stack.Screen name="contact" options={{ headerTitle: "Contact" }} />
-      </Stack>
+      <App />
     </AuthProvider>
   );
 }
+
+const App = () => {
+  const { session } = useAuth();
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="(public)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+    </Stack>
+  );
+};

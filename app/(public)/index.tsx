@@ -1,11 +1,11 @@
+import { Button } from "@/components/Button";
+import { FormInput } from "@/components/FormInput";
+import { Screen } from "@/components/Screen";
+import { Subtitle, Title } from "@/components/Typography";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, View } from "react-native";
-import { Button } from "../components/Button";
-import { FormInput } from "../components/FormInput";
-import { Screen } from "../components/Screen";
-import { Subtitle, Title } from "../components/Typography";
-import { useAuth } from "../contexts/AuthContext";
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -37,7 +37,9 @@ export default function Index() {
       await logout();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Unable to sign out right now.";
+        error instanceof Error
+          ? error.message
+          : "Unable to sign out right now.";
       Alert.alert("Logout Failed", message);
     }
   };
@@ -46,7 +48,7 @@ export default function Index() {
     <Screen className="px-6">
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
-          <Title className="mb-2 text-center">Welcome Back</Title>
+          <Title className="mb-2 text-center">Welcome Back Public</Title>
           {session ? (
             <>
               <Subtitle className="text-center mb-8">
