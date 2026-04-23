@@ -12,26 +12,6 @@ export default function Index() {
   const [password, setPassword] = useState("");
   const { session, login, logout } = useAuth();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert(
-        "Missing Information",
-        "Please enter both email and password.",
-      );
-      return;
-    }
-
-    try {
-      await login(email);
-      setEmail("");
-      setPassword("");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to sign in right now.";
-      Alert.alert("Login Failed", message);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -54,6 +34,9 @@ export default function Index() {
               <Subtitle className="text-center mb-8">
                 Signed in as {session.user.email}
               </Subtitle>
+              <Link href="/profile" asChild>
+                <Text className="text-blue-600 text-center mb-6">View Profile</Text>
+              </Link>
               <Button onPress={handleLogout} label="Log Out" />
             </>
           ) : (
@@ -62,26 +45,7 @@ export default function Index() {
                 Sign in to your account
               </Subtitle>
 
-              <FormInput
-                label="Email"
-                placeholder="you@example.com"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="sentences"
-                editable
-              />
-
-              <FormInput
-                label="Password"
-                placeholder="password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                editable
-              />
-
-              <Button onPress={handleLogin} label="Sign In" />
+              
             </>
           )}
         </View>

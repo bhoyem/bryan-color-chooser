@@ -48,15 +48,8 @@ export default function Index() {
     <Screen className="px-6">
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
-          <Title className="mb-2 text-center">Welcome Back Public</Title>
-          {session ? (
-            <>
-              <Subtitle className="text-center mb-8">
-                Signed in as {session.user.email}
-              </Subtitle>
-              <Button onPress={handleLogout} label="Log Out" />
-            </>
-          ) : (
+          <Title className="mb-2 text-center">Welcome Public</Title>
+          {
             <>
               <Subtitle className="text-center mb-8">
                 Sign in to your account
@@ -83,7 +76,7 @@ export default function Index() {
 
               <Button onPress={handleLogin} label="Sign In" />
             </>
-          )}
+          }
         </View>
       </View>
 
