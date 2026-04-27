@@ -1,47 +1,48 @@
-import * as SecureStore from "expo-secure-store";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-
-type User = {
-  email: string;
-};
-
-type Session = {
-  user: User;
-};
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 type AuthContextValue = {
   session: Session | null;
-  login: (email: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-const SESSION_KEY = "session";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    async function loadSession() {
-      const storedSession = await SecureStore.getItemAsync(SESSION_KEY);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      console.log(_event, !!nextSession);
+      setSession(nextSession);
+    });
 
-      if (storedSession) {
-        setSession(JSON.parse(storedSession));
-      }
-    }
-
-    loadSession();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = async (email: string) => {
-    const nextSession = { user: { email } };
-    setSession(nextSession);
-    await SecureStore.setItemAsync(SESSION_KEY, JSON.stringify(nextSession));
+  const login = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw error;
+    }
   };
 
   const logout = async () => {
-    setSession(null);
-    await SecureStore.deleteItemAsync(SESSION_KEY);
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
   };
 
   return (
