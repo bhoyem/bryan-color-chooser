@@ -6,12 +6,14 @@ type AuthContextValue = {
   session: Session | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  initializing: boolean;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     const {
@@ -19,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       console.log(_event, !!nextSession);
       setSession(nextSession);
+      setInitializing(false);
     });
 
     return () => {
@@ -46,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, login, logout }}>
+    <AuthContext.Provider value={{ session, login, logout, initializing }}>
       {children}
     </AuthContext.Provider>
   );
