@@ -1,9 +1,9 @@
-import { Link } from "expo-router";
 import { useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, View } from "react-native";
 import { Button } from "@/components/Button";
 import { FormInput } from "@/components/FormInput";
 import { Screen } from "@/components/Screen";
+import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -28,15 +28,13 @@ export default function Index() {
     <Screen className="px-6">
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
-          <Title className="mb-2 text-center">Welcome Back APP</Title>
+          <Title className="mb-2 text-center">Welcome Back, {session?.user.user_metadata.name}</Title>
           {session ? (
             <>
               <Subtitle className="text-center mb-8">
-                Signed in as {session.user.email}
+                Signed in with email {session.user.email}
               </Subtitle>
-              <Link href="/profile" asChild>
-                <Text className="text-blue-600 text-center mb-6">View Profile</Text>
-              </Link>
+              <TextLink href="/profile" label="View Profile" className="mb-6" />
               <Button onPress={handleLogout} label="Log Out" />
             </>
           ) : (
@@ -52,12 +50,8 @@ export default function Index() {
       </View>
 
       <View className="items-center pb-6">
-        <Link href="/about" asChild>
-          <Text className="text-blue-600 mb-2">About</Text>
-        </Link>
-        <Link href="/contact" asChild>
-          <Text className="text-blue-600">Contact</Text>
-        </Link>
+        <TextLink href="/about" label="About" className="mb-2" />
+        <TextLink href="/contact" label="Contact" />
       </View>
     </Screen>
   );

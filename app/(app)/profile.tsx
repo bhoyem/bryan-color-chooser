@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
-import { Alert, Text, View } from "react-native";
+import { Alert, View } from "react-native";
 import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
+import { TextLink } from "@/components/TextLink";
 import { Body, Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -40,9 +40,7 @@ export default function Profile() {
             <Body>{session ? "Signed in" : "Guest"}</Body>
           </View>
 
-          <Link href="/" asChild>
-            <Text className="text-blue-600 text-center my-6">Home</Text>
-          </Link>
+          <TextLink href="/" label="Home" className="my-6" />
 
           <Button onPress={handleLogout} label="Log Out" />
         </View>
