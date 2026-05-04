@@ -6,6 +6,7 @@ import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { Alert, View } from "react-native";
+import { supabase } from "@/lib/supabase";
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -32,45 +33,44 @@ export default function Index() {
     }
   };
 
+  const fetchMovies = async () => {
+    let { data: movies, error } = await supabase.from("movies").select("*");
+    console.log(`Movies: ${movies}`, error);
+  };
+
   return (
     <Screen className="px-6">
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
           <Title className="mb-2 text-center">Welcome Public</Title>
-          {
-            <>
-              <Subtitle className="text-center mb-8">
-                Sign in to your account
-              </Subtitle>
 
-              <FormInput
-                label="Email"
-                placeholder="you@example.com"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="sentences"
-                editable
-              />
+          <Subtitle className="text-center mb-8">
+            Sign in to your account
+          </Subtitle>
 
-              <FormInput
-                label="Password"
-                placeholder="password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                editable
-              />
+          <FormInput
+            label="Email"
+            placeholder="you@example.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="sentences"
+            editable
+          />
 
-              <Button onPress={handleLogin} label="Sign In" />
+          <FormInput
+            label="Password"
+            placeholder="password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            editable
+          />
 
-              <TextLink
-                href="/signup"
-                label="Create an account"
-                className="mt-6"
-              />
-            </>
-          }
+          <Button onPress={handleLogin} label="Sign In" />
+          <Button onPress={fetchMovies} label="Fetch Movies" />
+
+          <TextLink href="/signup" label="Create an account" className="mt-6" />
         </View>
       </View>
 
