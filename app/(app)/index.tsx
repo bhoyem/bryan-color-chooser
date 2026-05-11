@@ -3,14 +3,30 @@ import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase";
-import { useState } from "react";
+import { addMovie, getMovies } from "@/db/movies";
+import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 
 export default function Index() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { session, login, logout } = useAuth();
+  const [movieCount, setMovieCount] = useState(0);
+  const { session, logout } = useAuth();
+
+  const loadMovies = async () => {
+    try {
+      const movies = await getMovies();
+      setMovieCount(movies.length);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch movies right now.";
+      Alert.alert("Fetch Movies Failed", message);
+    }
+  };
+
+  useEffect(() => {
+    loadMovies();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -25,15 +41,16 @@ export default function Index() {
   };
 
   const insertMovie = async () => {
-    let { error } = await supabase
-      .from("movies")
-      .insert({ name: "Matrix II", description: "Neo does it again" });
-    console.log(error);
-  };
-
-  const fetchMovies = async () => {
-    let { data: movies, error } = await supabase.from("movies").select("*");
-    console.log(movies, error);
+    try {
+      await addMovie("Barbie", "The world turns pink");
+      await loadMovies();
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to insert movie right now.";
+      Alert.alert("Insert Movie Failed", message);
+    }
   };
 
   return (
@@ -46,9 +63,11 @@ export default function Index() {
           <Subtitle className="text-center mb-8">
             Signed in with email {session?.user.email}
           </Subtitle>
+          <Subtitle className="text-center mb-6">
+            Movies: {movieCount}
+          </Subtitle>
           <TextLink href="/profile" label="View Profile" className="mb-6" />
           <Button onPress={handleLogout} label="Log Out" />
-          <Button onPress={fetchMovies} label="Fetch Movies" />
           <Button onPress={insertMovie} label="Insert Movie" />
         </View>
       </View>

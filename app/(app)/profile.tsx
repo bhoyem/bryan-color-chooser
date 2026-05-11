@@ -4,10 +4,30 @@ import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Body, Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
+import { addMovie, getMovies } from "@/db/movies";
+import { useEffect, useState } from "react";
 
 export default function Profile() {
+  const [movieCount, setMovieCount] = useState(0);
   const { session, logout } = useAuth();
   const email = session?.user.email ?? "Not available";
+
+  const loadMovies = async () => {
+    try {
+      const movies = await getMovies();
+      setMovieCount(movies.length);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch movies right now.";
+      Alert.alert("Fetch Movies Failed", message);
+    }
+  };
+
+  useEffect(() => {
+    loadMovies();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -18,6 +38,19 @@ export default function Profile() {
           ? error.message
           : "Unable to sign out right now.";
       Alert.alert("Logout Failed", message);
+    }
+  };
+
+  const insertMovie = async () => {
+    try {
+      await addMovie("Barbie", "The world turns pink");
+      await loadMovies();
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to insert movie right now.";
+      Alert.alert("Insert Movie Failed", message);
     }
   };
 
@@ -40,9 +73,14 @@ export default function Profile() {
             <Body>{session ? "Signed in" : "Guest"}</Body>
           </View>
 
+          <Subtitle className="text-center my-6">
+            Movies: {movieCount}
+          </Subtitle>
+
           <TextLink href="/" label="Home" className="my-6" />
 
           <Button onPress={handleLogout} label="Log Out" />
+          <Button onPress={insertMovie} label="Insert Movie" />
         </View>
       </View>
     </Screen>
