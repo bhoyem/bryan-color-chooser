@@ -4,31 +4,16 @@ import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Body, Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
-import { addMovie, getMovies } from "@/db/movies";
+import { addMovie } from "@/db/movies";
 import { useEffect, useState } from "react";
+import { useMovies } from "@/db/queries";
+import { useInsertMovie } from "@/db/mutations";
 
 export default function Profile() {
-  const [movieCount, setMovieCount] = useState(0);
   const { session, logout } = useAuth();
   const email = session?.user.email ?? "Not available";
-
-  const loadMovies = async () => {
-    try {
-      const movies = await getMovies();
-      setMovieCount(movies.length);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to fetch movies right now.";
-      Alert.alert("Fetch Movies Failed", message);
-    }
-  };
-
-  useEffect(() => {
-    loadMovies();
-  }, []);
-
+  const { data } = useMovies();
+  const { mutateAsync } = useInsertMovie();
   const handleLogout = async () => {
     try {
       await logout();
@@ -43,8 +28,8 @@ export default function Profile() {
 
   const insertMovie = async () => {
     try {
-      await addMovie("Barbie", "The world turns pink");
-      await loadMovies();
+      await mutateAsync({name:"Barbie", description:"The world turns pink"});
+      // await loadMovies();
     } catch (error) {
       const message =
         error instanceof Error
@@ -74,7 +59,7 @@ export default function Profile() {
           </View>
 
           <Subtitle className="text-center my-6">
-            Movies: {movieCount}
+            Movies: {data?.length}
           </Subtitle>
 
           <TextLink href="/" label="Home" className="my-6" />

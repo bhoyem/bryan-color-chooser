@@ -4,29 +4,17 @@ import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
 import { addMovie, getMovies } from "@/db/movies";
+import { useInsertMovie } from "@/db/mutations";
+import { useMovies } from "@/db/queries";
 import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 
 export default function Index() {
-  const [movieCount, setMovieCount] = useState(0);
+  // const [movieCount, setMovieCount] = useState(0);
   const { session, logout } = useAuth();
-
-  const loadMovies = async () => {
-    try {
-      const movies = await getMovies();
-      setMovieCount(movies.length);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to fetch movies right now.";
-      Alert.alert("Fetch Movies Failed", message);
-    }
-  };
-
-  useEffect(() => {
-    loadMovies();
-  }, []);
+  const { data } = useMovies();
+  const { mutateAsync } = useInsertMovie();
+  console.log("from tanstack", data?.length);
 
   const handleLogout = async () => {
     try {
@@ -42,8 +30,8 @@ export default function Index() {
 
   const insertMovie = async () => {
     try {
-      await addMovie("Barbie", "The world turns pink");
-      await loadMovies();
+      await mutateAsync({name:"Barbie", description:"The world turns pink"});
+      // await loadMovies();
     } catch (error) {
       const message =
         error instanceof Error
@@ -64,7 +52,7 @@ export default function Index() {
             Signed in with email {session?.user.email}
           </Subtitle>
           <Subtitle className="text-center mb-6">
-            Movies: {movieCount}
+            Movies: {data?.length}
           </Subtitle>
           <TextLink href="/profile" label="View Profile" className="mb-6" />
           <Button onPress={handleLogout} label="Log Out" />
