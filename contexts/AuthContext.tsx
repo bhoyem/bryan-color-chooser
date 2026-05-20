@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -67,6 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       throw error;
     }
+
+    const { error: insertError } = await supabase
+      .from("users")
+      .insert({
+        id: data.user?.id,
+        email: data.user?.email,
+        name: data.user?.user_metadata.name,
+      });
+      if(insertError) {
+        throw insertError;
+      }
   };
 
   return (
