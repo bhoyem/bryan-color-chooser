@@ -3,17 +3,19 @@ import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
-import { addMovie, getMovies } from "@/db/movies";
 import { useInsertMovie } from "@/db/mutations";
-import { useMovies } from "@/db/queries";
-import { useEffect, useState } from "react";
+import { useMovies, useUser } from "@/db/queries";
 import { Alert, View } from "react-native";
 
 export default function Index() {
   // const [movieCount, setMovieCount] = useState(0);
-  const { session, logout } = useAuth();
+  const { logout } = useAuth();
   const { data } = useMovies();
   const { mutateAsync } = useInsertMovie();
+  const { data: user, isLoading } = useUser();
+
+  console.log(user);
+
   console.log("from tanstack", data?.length);
 
   const handleLogout = async () => {
@@ -28,9 +30,20 @@ export default function Index() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Screen style={{ alignItems: "center", justifyContent: "center" }}>
+        <Title>Loading</Title>
+      </Screen>
+    );
+  }
+
   const insertMovie = async () => {
     try {
-      await mutateAsync({name:"Barbie", description:"The world turns pink"});
+      await mutateAsync({
+        name: "Barbie",
+        description: "The world turns pink",
+      });
       // await loadMovies();
     } catch (error) {
       const message =
@@ -41,15 +54,21 @@ export default function Index() {
     }
   };
 
+  if (!user) {
+    return (
+      <Screen style={{ alignItems: "center", justifyContent: "center" }}>
+        <Title> No user found </Title>
+      </Screen>
+    );
+  }
+
   return (
     <Screen className="px-6">
       <View className="flex-1 w-full justify-center items-center">
         <View className="w-full bg-white rounded-2xl shadow-lg p-8">
-          <Title className="mb-2 text-center">
-            Welcome Back again, {session?.user.user_metadata.name}
-          </Title>
+          <Title className="mb-2 text-center">Welcome back, {user?.name}</Title>
           <Subtitle className="text-center mb-8">
-            Signed in with email {session?.user.email}
+            Signed in with email {user?.email}
           </Subtitle>
           <Subtitle className="text-center mb-6">
             Movies: {data?.length}

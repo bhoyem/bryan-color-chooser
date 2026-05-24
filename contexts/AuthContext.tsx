@@ -1,3 +1,4 @@
+import { getUser } from "@/db/user";
 import {
   createContext,
   ReactNode,
@@ -6,6 +7,7 @@ import {
   useState,
 } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 type AuthContextValue = {
@@ -21,20 +23,36 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      console.log(_event, !!nextSession);
-      setSession(nextSession);
-      setInitializing(false);
+      setTimeout(async () => {
+        console.log(event, !!nextSession);
+        if (nextSession) {
+          try {
+            const user = await getUser();
+            queryClient.setQueryData(["user"], user);
+          } catch (error) {
+            console.error("Unable to load user after auth change", error);
+          }
+
+          setSession(nextSession);
+        } else {
+          setSession(null);
+          queryClient.clear();
+        }
+
+        setInitializing(false);
+      });
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -68,16 +86,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error;
     }
 
-    const { error: insertError } = await supabase
-      .from("users")
-      .insert({
-        id: data.user?.id,
-        email: data.user?.email,
-        name: data.user?.user_metadata.name,
+    if (data.user?.email) {
+      const { error: insertError } = await supabase.from("users").insert({
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.user_metadata.name,
       });
-      if(insertError) {
+
+      if (insertError) {
         throw insertError;
       }
+    }
   };
 
   return (

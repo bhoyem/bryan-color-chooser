@@ -8,10 +8,9 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 
 export default function Signup() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { signup } = useAuth();
+  const [name, setName] = useState("Bryan");
+  const [email, setEmail] = useState("b@b.com");
+  const [password, setPassword] = useState("123123");  const { signup } = useAuth();
 
   const handleSignup = async () => {
     if (!name || !email || !password) {
