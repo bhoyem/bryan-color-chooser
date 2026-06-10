@@ -1,14 +1,17 @@
 import { Button } from "@/components/Button";
+import { FormInput } from "@/components/FormInput";
 import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInsertMovie } from "@/db/mutations";
 import { useMovies, useUser } from "@/db/queries";
+import { useState } from "react";
 import { Alert, View } from "react-native";
 
 export default function Index() {
   // const [movieCount, setMovieCount] = useState(0);
+  const [friendId, setFriendId] = useState("");
   const { logout } = useAuth();
   const { data } = useMovies();
   const { mutateAsync } = useInsertMovie();
@@ -73,6 +76,17 @@ export default function Index() {
           <Subtitle className="text-center mb-6">
             Movies: {data?.length}
           </Subtitle>
+          <FormInput
+            label="Friend ID"
+            placeholder="Enter a friend's ID"
+            value={friendId}
+            onChangeText={setFriendId}
+          />
+          <Button
+            label="Insert Friend"
+            className="mb-6"
+            onPress={() => {}}
+          />
           <TextLink href="/profile" label="View Profile" className="mb-6" />
           <Button onPress={handleLogout} label="Log Out" />
           <Button onPress={insertMovie} label="Insert Movie" />
