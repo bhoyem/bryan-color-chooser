@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addMovie } from "./movies";
+import { addFriend } from "./friends";
 
-export function useInsertMovie() {
+export function useInsertFriend() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: addMovie,
+    mutationFn: addFriend,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
     },
   });
 }
+

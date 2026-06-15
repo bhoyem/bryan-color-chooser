@@ -4,8 +4,8 @@ import { Screen } from "@/components/Screen";
 import { TextLink } from "@/components/TextLink";
 import { Subtitle, Title } from "@/components/Typography";
 import { useAuth } from "@/contexts/AuthContext";
-import { useInsertMovie } from "@/db/mutations";
-import { useMovies, useUser } from "@/db/queries";
+import { useInsertFriend } from "@/db/mutations";
+import { useFriends, useUser } from "@/db/queries";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 
@@ -13,13 +13,13 @@ export default function Index() {
   // const [movieCount, setMovieCount] = useState(0);
   const [friendId, setFriendId] = useState("");
   const { logout } = useAuth();
-  const { data } = useMovies();
-  const { mutateAsync } = useInsertMovie();
   const { data: user, isLoading } = useUser();
+  const { data: friends } = useFriends();
+  const { mutateAsync: insertFriend, isPending } = useInsertFriend();
 
   console.log(user);
 
-  console.log("from tanstack", data?.length);
+  // console.log("from tanstack", data?.length);
 
   const handleLogout = async () => {
     try {
@@ -33,6 +33,18 @@ export default function Index() {
     }
   };
 
+  const handleInsertFriend = async () => {
+    try {
+      const name = await insertFriend(friendId.trim());
+      Alert.alert("Friend added", name);
+      setFriendId("");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to add friend right now.";
+      Alert.alert("Add Friend Failed", message);
+    }
+  };
+
   if (isLoading) {
     return (
       <Screen style={{ alignItems: "center", justifyContent: "center" }}>
@@ -40,22 +52,6 @@ export default function Index() {
       </Screen>
     );
   }
-
-  const insertMovie = async () => {
-    try {
-      await mutateAsync({
-        name: "Barbie",
-        description: "The world turns pink",
-      });
-      // await loadMovies();
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to insert movie right now.";
-      Alert.alert("Insert Movie Failed", message);
-    }
-  };
 
   if (!user) {
     return (
@@ -74,8 +70,9 @@ export default function Index() {
             Signed in with email {user?.email}
           </Subtitle>
           <Subtitle className="text-center mb-6">
-            Movies: {data?.length}
+            You have {friends?.length ?? 0} friends
           </Subtitle>
+         
           <FormInput
             label="Friend ID"
             placeholder="Enter a friend's ID"
@@ -85,11 +82,11 @@ export default function Index() {
           <Button
             label="Insert Friend"
             className="mb-6"
-            onPress={() => {}}
+            onPress={handleInsertFriend}
+            disabled={isPending}
           />
           <TextLink href="/profile" label="View Profile" className="mb-6" />
           <Button onPress={handleLogout} label="Log Out" />
-          <Button onPress={insertMovie} label="Insert Movie" />
         </View>
       </View>
 

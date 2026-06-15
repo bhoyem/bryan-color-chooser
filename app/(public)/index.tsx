@@ -33,10 +33,7 @@ export default function Index() {
     }
   };
 
-  const fetchMovies = async () => {
-    let { data: movies, error } = await supabase.from("movies").select("*");
-    console.log(`Movies: ${movies}`, error);
-  };
+  
 
   return (
     <Screen className="px-6">
@@ -68,7 +65,6 @@ export default function Index() {
           />
 
           <Button onPress={handleLogin} label="Sign In" />
-          <Button onPress={fetchMovies} label="Fetch Movies" />
 
           <TextLink href="/signup" label="Create an account" className="mt-6" />
         </View>
