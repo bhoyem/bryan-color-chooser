@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useInsertFriend } from "@/db/mutations";
 import { useFriends, useUser } from "@/db/queries";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, Share, View } from "react-native";
 
 export default function Index() {
   // const [movieCount, setMovieCount] = useState(0);
@@ -42,6 +42,18 @@ export default function Index() {
       const message =
         error instanceof Error ? error.message : "Unable to add friend right now.";
       Alert.alert("Add Friend Failed", message);
+    }
+  };
+
+  const handleShareId = async () => {
+    try {
+      await Share.share({
+        message: `My friend ID is ${user.id}`,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to share your ID right now.";
+      Alert.alert("Share Failed", message);
     }
   };
 
@@ -85,6 +97,7 @@ export default function Index() {
             onPress={handleInsertFriend}
             disabled={isPending}
           />
+          <Button label="Share My ID" className="mb-6" onPress={handleShareId} />
           <TextLink href="/profile" label="View Profile" className="mb-6" />
           <Button onPress={handleLogout} label="Log Out" />
         </View>
