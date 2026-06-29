@@ -13,8 +13,18 @@ export async function getFriends(id: string) {
   return data;
 }
 
-export async function addFriend(friendId: string) {
-  const { data, error } = await supabase.rpc("add_friend", { friend_id: friendId });
+export async function addFriend(friendCode: string) {
+  const { data, error } = await supabase.rpc("add_friend", { friend_code: friendCode });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function createInviteCode() {
+  const { data, error } = await supabase.rpc("create_invite_code");
 
   if (error) {
     throw new Error(error.message);
